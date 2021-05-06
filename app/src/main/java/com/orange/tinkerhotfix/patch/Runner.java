@@ -60,6 +60,12 @@ public class Runner {
 
     /**
      * 我最终的目的是想要知道 1.腾讯生成的补丁是什么样子的 2.我只需要知道它生成补丁是什么形式的
+     *
+     * 使用方式 通过 cmd 命令来调用这个main方法也行。 或者通过运行的方式(F9)也可以 但是需要配置命令
+     *
+     * 命令语句: -old D:\compile_apk\反编译\temp\old.apk -new D:\compile_apk\反编译\temp\new.apk -config D:\local\TinkerHotFix\tinker_config.xml
+     *
+     * 使用之前需要在edit configsurations 里面去配置命令 首先选择类，然后选择application 然后选择 program args 配置命令 如上
      */
     protected void tinkerPatch() {
         Logger.d("-----------------------Tinker patch begin-----------------------");
