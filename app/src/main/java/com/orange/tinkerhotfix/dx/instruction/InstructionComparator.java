@@ -16,9 +16,10 @@
 
 package com.orange.tinkerhotfix.dx.instruction;
 
-import com.tencent.tinker.android.dex.DexException;
-import com.tencent.tinker.android.dex.util.CompareUtils;
-import com.tencent.tinker.android.dx.util.Hex;
+
+import com.orange.tinkerhotfix.dx.instruction.util.Hex;
+import com.orange.tinkerhotfix.party.DexException;
+import com.orange.tinkerhotfix.party.util.CompareUtils;
 
 import java.io.EOFException;
 import java.util.HashSet;

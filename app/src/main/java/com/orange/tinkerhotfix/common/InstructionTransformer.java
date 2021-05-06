@@ -16,14 +16,15 @@
 
 package com.orange.tinkerhotfix.common;
 
-import com.tencent.tinker.android.dex.DexException;
-import com.tencent.tinker.android.dx.instruction.InstructionCodec;
-import com.tencent.tinker.android.dx.instruction.InstructionPromoter;
-import com.tencent.tinker.android.dx.instruction.InstructionReader;
-import com.tencent.tinker.android.dx.instruction.InstructionVisitor;
-import com.tencent.tinker.android.dx.instruction.InstructionWriter;
-import com.tencent.tinker.android.dx.instruction.ShortArrayCodeInput;
-import com.tencent.tinker.android.dx.instruction.ShortArrayCodeOutput;
+
+import com.orange.tinkerhotfix.dx.instruction.InstructionCodec;
+import com.orange.tinkerhotfix.dx.instruction.InstructionPromoter;
+import com.orange.tinkerhotfix.dx.instruction.InstructionReader;
+import com.orange.tinkerhotfix.dx.instruction.InstructionVisitor;
+import com.orange.tinkerhotfix.dx.instruction.InstructionWriter;
+import com.orange.tinkerhotfix.dx.instruction.ShortArrayCodeInput;
+import com.orange.tinkerhotfix.dx.instruction.ShortArrayCodeOutput;
+import com.orange.tinkerhotfix.party.DexException;
 
 import java.io.EOFException;
 

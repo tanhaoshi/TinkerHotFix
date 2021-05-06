@@ -16,6 +16,7 @@
 
 package com.orange.tinkerhotfix.patch.decode;
 
+
 import com.orange.tinkerhotfix.patch.Configuration;
 
 import java.io.File;
@@ -75,6 +76,7 @@ public abstract class BaseDecoder {
      * @param oldFile 如果oldfile 为空，代表这是一个新的文件
      * @param newFile
      * @throws IOException
+     * @throws TinkerPatchException
      */
     abstract public boolean patch(File oldFile, File newFile) throws Exception;
 

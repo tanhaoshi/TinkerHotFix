@@ -31,7 +31,7 @@ public class UniqueDexDiffDecoder extends DexDiffDecoder {
     private ArrayList<String> addedDexFiles;
 
     public UniqueDexDiffDecoder(Configuration config, String metaPath, String logPath) throws IOException {
-        super(config, metaPath, logPath);
+        super(config);
         addedDexFiles = new ArrayList<>();
     }
 

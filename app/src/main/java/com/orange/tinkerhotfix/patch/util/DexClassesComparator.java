@@ -17,7 +17,7 @@
 package com.orange.tinkerhotfix.patch.util;
 
 import com.orange.tinkerhotfix.common.DexPatcherLogger;
-import com.orange.tinkerhotfix.common.PatternUtils;
+import com.orange.tinkerhotfix.dexpatcher.util.PatternUtils;
 import com.orange.tinkerhotfix.dx.instruction.InstructionComparator;
 import com.orange.tinkerhotfix.party.Annotation;
 import com.orange.tinkerhotfix.party.AnnotationSet;
@@ -69,7 +69,7 @@ public final class DexClassesComparator {
     private final List<DexClassInfo> deletedClassInfoList = new ArrayList<>();
     // classDesc => [oldClassInfo, newClassInfo]
     private final Map<String, DexClassInfo[]> changedClassDescToClassInfosMap = new HashMap<>();
-    private final Set<Pattern> patternsOfClassDescToCheck = new HashSet<>();
+//    private final Set<Pattern> patternsOfClassDescToCheck = new HashSet<>();
     private final Set<Pattern> patternsOfIgnoredRemovedClassDesc = new HashSet<>();
     private final Set<String> oldDescriptorOfClassesToCheck = new HashSet<>();
     private final Set<String> newDescriptorOfClassesToCheck = new HashSet<>();
@@ -82,31 +82,25 @@ public final class DexClassesComparator {
     private final DexPatcherLogger logger = new DexPatcherLogger();
 
     public DexClassesComparator(String patternStringOfClassDescToCheck) {
-        patternsOfClassDescToCheck.add(
-                Pattern.compile(
-                        PatternUtils.dotClassNamePatternToDescriptorRegEx(patternStringOfClassDescToCheck)
-                )
-        );
+//        patternsOfClassDescToCheck.add(
+//                Pattern.compile(
+//                        PatternUtils.dotClassNamePatternToDescriptorRegEx(patternStringOfClassDescToCheck)
+//                )
+//        );
     }
 
     public DexClassesComparator(String... patternStringsOfClassDescToCheck) {
-        for (String patternStr : patternStringsOfClassDescToCheck) {
-            patternsOfClassDescToCheck.add(
-                    Pattern.compile(
-                            PatternUtils.dotClassNamePatternToDescriptorRegEx(patternStr)
-                    )
-            );
-        }
+//        for (String patternStr : patternStringsOfClassDescToCheck) {
+//            patternsOfClassDescToCheck.add(
+//                    Pattern.compile(
+//                            PatternUtils.dotClassNamePatternToDescriptorRegEx(patternStr)
+//                    )
+//            );
+//        }
     }
 
-    public DexClassesComparator(Collection<String> patternStringsOfClassDescToCheck) {
-        for (String patternStr : patternStringsOfClassDescToCheck) {
-            patternsOfClassDescToCheck.add(
-                    Pattern.compile(
-                            PatternUtils.dotClassNamePatternToDescriptorRegEx(patternStr)
-                    )
-            );
-        }
+    public DexClassesComparator() {
+
     }
 
     public void setIgnoredRemovedClassDescPattern(String... patternStringsOfLoaderClassDesc) {
@@ -180,16 +174,7 @@ public final class DexClassesComparator {
             int classDefIndex = 0;
             for (ClassDef oldClassDef : oldDex.classDefs()) {
                 String desc = oldDex.typeNames().get(oldClassDef.typeIndex);
-                if (Utils.isStringMatchesPatterns(desc, patternsOfClassDescToCheck)) {
-                    if (!oldDescriptorOfClassesToCheck.add(desc)) {
-                        throw new IllegalStateException(
-                                String.format(
-                                        "duplicate class descriptor [%s] in different old dexes.",
-                                        desc
-                                )
-                        );
-                    }
-                }
+
                 DexClassInfo classInfo = new DexClassInfo(desc, classDefIndex, oldClassDef, oldDex);
                 ++classDefIndex;
                 oldClassDescriptorToClassInfoMap.put(desc, classInfo);
@@ -202,16 +187,7 @@ public final class DexClassesComparator {
             int classDefIndex = 0;
             for (ClassDef newClassDef : newDex.classDefs()) {
                 String desc = newDex.typeNames().get(newClassDef.typeIndex);
-                if (Utils.isStringMatchesPatterns(desc, patternsOfClassDescToCheck)) {
-                    if (!newDescriptorOfClassesToCheck.add(desc)) {
-                        throw new IllegalStateException(
-                                String.format(
-                                        "duplicate class descriptor [%s] in different new dexes.",
-                                        desc
-                                )
-                        );
-                    }
-                }
+
                 DexClassInfo classInfo = new DexClassInfo(desc, classDefIndex, newClassDef, newDex);
                 ++classDefIndex;
                 newClassDescriptorToClassInfoMap.put(desc, classInfo);

@@ -168,10 +168,10 @@ public class ResDiffDecoder extends BaseDecoder {
         //actually, it won't go below
         if (newFile == null || !newFile.exists()) {
             String relativeStringByOldDir = getRelativePathStringToOldFile(oldFile);
-            if (Utils.checkFileInPattern(config.mResIgnoreChangePattern, relativeStringByOldDir)) {
-                Logger.e("found delete resource: " + relativeStringByOldDir + " ,but it match ignore change pattern, just ignore!");
-                return false;
-            }
+//            if (Utils.checkFileInPattern(config.mResIgnoreChangePattern, relativeStringByOldDir)) {
+//                Logger.e("found delete resource: " + relativeStringByOldDir + " ,but it match ignore change pattern, just ignore!");
+//                return false;
+//            }
             deletedSet.add(relativeStringByOldDir);
             writeResLog(newFile, oldFile, TypedValue.DEL);
             return true;
@@ -180,10 +180,10 @@ public class ResDiffDecoder extends BaseDecoder {
         File outputFile = getOutputPath(newFile).toFile();
 
         if (oldFile == null || !oldFile.exists()) {
-            if (Utils.checkFileInPattern(config.mResIgnoreChangePattern, name)) {
-                Logger.e("found add resource: " + name + " ,but it match ignore change pattern, just ignore!");
-                return false;
-            }
+//            if (Utils.checkFileInPattern(config.mResIgnoreChangePattern, name)) {
+//                Logger.e("found add resource: " + name + " ,but it match ignore change pattern, just ignore!");
+//                return false;
+//            }
             FileOperation.copyFileUsingStream(newFile, outputFile);
             addedSet.add(name);
             writeResLog(newFile, oldFile, TypedValue.ADD);
@@ -201,10 +201,10 @@ public class ResDiffDecoder extends BaseDecoder {
         if (oldMd5 != null && oldMd5.equals(newMd5)) {
             return false;
         }
-        if (Utils.checkFileInPattern(config.mResIgnoreChangePattern, name)) {
-            Logger.d("found modify resource: " + name + ", but it match ignore change pattern, just ignore!");
-            return false;
-        }
+//        if (Utils.checkFileInPattern(config.mResIgnoreChangePattern, name)) {
+//            Logger.d("found modify resource: " + name + ", but it match ignore change pattern, just ignore!");
+//            return false;
+//        }
         if (name.equals(TypedValue.RES_MANIFEST)) {
             Logger.d("found modify resource: " + name + ", but it is AndroidManifest.xml, just ignore!");
             return false;
@@ -296,12 +296,12 @@ public class ResDiffDecoder extends BaseDecoder {
             return;
         }
 
-        if (!config.mResRawPattern.contains(TypedValue.RES_ARSC)) {
-            throw new TinkerPatchException("resource must contain resources.arsc pattern");
-        }
-        if (!config.mResRawPattern.contains(TypedValue.RES_MANIFEST)) {
-            throw new TinkerPatchException("resource must contain AndroidManifest.xml pattern");
-        }
+//        if (!config.mResRawPattern.contains(TypedValue.RES_ARSC)) {
+//            throw new TinkerPatchException("resource must contain resources.arsc pattern");
+//        }
+//        if (!config.mResRawPattern.contains(TypedValue.RES_MANIFEST)) {
+//            throw new TinkerPatchException("resource must contain AndroidManifest.xml pattern");
+//        }
 
         //check gradle build
         if (config.mUsingGradle) {
@@ -379,15 +379,15 @@ public class ResDiffDecoder extends BaseDecoder {
 
         //pattern
         String patternMeta = TypedValue.PATTERN_TITLE;
-        HashSet<String> patterns = new HashSet<>(config.mResRawPattern);
+//        HashSet<String> patterns = new HashSet<>(config.mResRawPattern);
         //we will process them separate
-        patterns.remove(TypedValue.RES_MANIFEST);
+//        patterns.remove(TypedValue.RES_MANIFEST);
 
-        writeMetaFile(patternMeta + patterns.size());
+//        writeMetaFile(patternMeta + patterns.size());
         //write pattern
-        for (String item : patterns) {
-            writeMetaFile(item);
-        }
+//        for (String item : patterns) {
+//            writeMetaFile(item);
+//        }
 
         //add store files
         getCompressMethodFromApk();
@@ -417,12 +417,12 @@ public class ResDiffDecoder extends BaseDecoder {
                 resName = resName.substring(0, firstDotPos);
             }
             if (newApkAnimResNames.contains(resName)) {
-                if (Utils.isStringMatchesPatterns(resFileName, config.mResIgnoreChangeWarningPattern)) {
-                    Logger.d("\nAnimation resource: " + resFileName
-                            + " was changed, but it's filtered by ignoreChangeWarning pattern, just ignore.\n");
-                } else {
-                    changedAnimResNames.add(resFileName);
-                }
+//                if (Utils.isStringMatchesPatterns(resFileName, config.mResIgnoreChangeWarningPattern)) {
+//                    Logger.d("\nAnimation resource: " + resFileName
+//                            + " was changed, but it's filtered by ignoreChangeWarning pattern, just ignore.\n");
+//                } else {
+//                    changedAnimResNames.add(resFileName);
+//                }
             }
         }
         if (!changedAnimResNames.isEmpty()) {
@@ -478,10 +478,10 @@ public class ResDiffDecoder extends BaseDecoder {
     private void removeIgnoreChangeFile(ArrayList<String> array) {
         ArrayList<String> removeList = new ArrayList<>();
         for (String name : array) {
-            if (Utils.checkFileInPattern(config.mResIgnoreChangePattern, name)) {
-                Logger.e("ignore change resource file: " + name);
-                removeList.add(name);
-            }
+//            if (Utils.checkFileInPattern(config.mResIgnoreChangePattern, name)) {
+//                Logger.e("ignore change resource file: " + name);
+//                removeList.add(name);
+//            }
         }
         array.removeAll(removeList);
     }
@@ -559,14 +559,14 @@ public class ResDiffDecoder extends BaseDecoder {
 
             String patternKey = relativePath.toString().replace("\\", "/");
 
-            if (Utils.checkFileInPattern(config.mResFilePattern, patternKey)) {
-                //not contain in new path, is deleted
-                if (!newPath.toFile().exists()) {
-                    deletedFiles.add(patternKey);
-                    writeResLog(newPath.toFile(), file.toFile(), TypedValue.DEL);
-                }
-                return FileVisitResult.CONTINUE;
-            }
+//            if (Utils.checkFileInPattern(config.mResFilePattern, patternKey)) {
+//                //not contain in new path, is deleted
+//                if (!newPath.toFile().exists()) {
+//                    deletedFiles.add(patternKey);
+//                    writeResLog(newPath.toFile(), file.toFile(), TypedValue.DEL);
+//                }
+//                return FileVisitResult.CONTINUE;
+//            }
             return FileVisitResult.CONTINUE;
         }
     }

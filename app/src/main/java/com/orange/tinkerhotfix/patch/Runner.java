@@ -20,6 +20,8 @@ import com.orange.tinkerhotfix.patch.builder.PatchBuilder;
 import com.orange.tinkerhotfix.patch.decode.ApkDecoder;
 import com.orange.tinkerhotfix.patch.info.PatchInfo;
 import com.orange.tinkerhotfix.patch.util.Logger;
+
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -56,6 +58,9 @@ public class Runner {
         }
     }
 
+    /**
+     * 我最终的目的是想要知道 1.腾讯生成的补丁是什么样子的 2.我只需要知道它生成补丁是什么形式的
+     */
     protected void tinkerPatch() {
         Logger.d("-----------------------Tinker patch begin-----------------------");
 
@@ -68,8 +73,8 @@ public class Runner {
             decoder.onAllPatchesEnd();
 
             //gen meta file and version file
-            PatchInfo info = new PatchInfo(mConfig);
-            info.gen();
+//            PatchInfo info = new PatchInfo(mConfig);
+//            info.gen();
 
             //build patch
             PatchBuilder builder = new PatchBuilder(mConfig);

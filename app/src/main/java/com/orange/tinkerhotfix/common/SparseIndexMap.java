@@ -16,8 +16,9 @@
 
 package com.orange.tinkerhotfix.common;
 
-import com.tencent.tinker.android.utils.SparseBoolArray;
-import com.tencent.tinker.android.utils.SparseIntArray;
+
+import com.orange.tinkerhotfix.util.SparseBoolArray;
+import com.orange.tinkerhotfix.util.SparseIntArray;
 
 /**
  * Created by tangyinsheng on 2016/6/29.

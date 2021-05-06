@@ -16,8 +16,9 @@
 
 package com.orange.tinkerhotfix.party;
 
-import com.tencent.tinker.android.dex.util.CompareUtils;
-import com.tencent.tinker.android.dex.util.HashCodeHelper;
+
+import com.orange.tinkerhotfix.party.util.CompareUtils;
+import com.orange.tinkerhotfix.party.util.HashCodeHelper;
 
 public final class ProtoId extends TableOfContents.Section.Item<ProtoId> {
     public int shortyIndex;

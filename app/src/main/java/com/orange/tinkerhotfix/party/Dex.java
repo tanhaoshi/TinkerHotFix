@@ -108,7 +108,6 @@ public final class Dex {
         if (file == null) {
             throw new IllegalArgumentException("file is null.");
         }
-
         if (FileUtils.hasArchiveSuffix(file.getName())) {
             ZipFile zipFile = null;
             try {

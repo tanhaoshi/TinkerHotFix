@@ -20,8 +20,8 @@ package com.orange.tinkerhotfix.patch.decode;
 
 import com.orange.tinkerhotfix.common.DexPatchApplier;
 import com.orange.tinkerhotfix.common.DexPatcherLogger;
-import com.orange.tinkerhotfix.common.PatternUtils;
 import com.orange.tinkerhotfix.dexpatcher.DexPatchGenerator;
+import com.orange.tinkerhotfix.dexpatcher.util.PatternUtils;
 import com.orange.tinkerhotfix.party.ClassDef;
 import com.orange.tinkerhotfix.party.Dex;
 import com.orange.tinkerhotfix.party.DexFormat;
@@ -80,8 +80,8 @@ public class DexDiffDecoder extends BaseDecoder {
     private static final String TEST_DEX_NAME = "test.dex";
     private static final String CHANGED_CLASSES_DEX_NAME_PREFIX = "changed_classes";
 
-    private final InfoWriter logWriter;
-    private final InfoWriter metaWriter;
+//    private final InfoWriter logWriter;
+//    private final InfoWriter metaWriter;
 
     private final ExcludedClassModifiedChecker excludedClassModifiedChecker;
 
@@ -92,7 +92,7 @@ public class DexDiffDecoder extends BaseDecoder {
 
     private final Map<String, RelatedInfo> dexNameToRelatedInfoMap;
     private boolean hasDexChanged = false;
-    private DexPatcherLoggerBridge dexPatcherLoggerBridge = null;
+//    private DexPatcherLoggerBridge dexPatcherLoggerBridge = null;
 
     private final Set<Pattern> loaderClassPatterns;
 
@@ -100,24 +100,24 @@ public class DexDiffDecoder extends BaseDecoder {
 
     private final List<File> oldDexFiles;
 
-    public DexDiffDecoder(Configuration config, String metaPath, String logPath) throws IOException {
-        super(config);
+    public DexDiffDecoder(Configuration configuration) throws IOException {
+        super(configuration);
 
-        if (metaPath != null) {
-            metaWriter = new InfoWriter(config, config.mTempResultDir + File.separator + metaPath);
-        } else {
-            metaWriter = null;
-        }
-
-        if (logPath != null) {
-            logWriter = new InfoWriter(config, config.mOutFolder + File.separator + logPath);
-        } else {
-            logWriter = null;
-        }
-
-        if (logWriter != null) {
-            this.dexPatcherLoggerBridge = new DexPatcherLoggerBridge(logWriter);
-        }
+//        if (metaPath != null) {
+//            metaWriter = new InfoWriter(config, config.mTempResultDir + File.separator + metaPath);
+//        } else {
+//            metaWriter = null;
+//        }
+//
+//        if (logPath != null) {
+//            logWriter = new InfoWriter(config, config.mOutFolder + File.separator + logPath);
+//        } else {
+//            logWriter = null;
+//        }
+//
+//        if (logWriter != null) {
+//            this.dexPatcherLoggerBridge = new DexPatcherLoggerBridge(logWriter);
+//        }
 
         excludedClassModifiedChecker = new ExcludedClassModifiedChecker(config);
 
@@ -243,7 +243,7 @@ public class DexDiffDecoder extends BaseDecoder {
             generatePatchInfoFile();
         }
 
-        addTestDex();
+//        addTestDex();
     }
 
     private boolean isReferenceFromLoaderClassValid(String refereeTypeDesc) {
@@ -399,7 +399,7 @@ public class DexDiffDecoder extends BaseDecoder {
 
         ChangedClassesDexClassInfoCollector collector = new ChangedClassesDexClassInfoCollector();
         collector.setExcludedClassPatterns(config.mDexLoaderPattern);
-        collector.setLogger(dexPatcherLoggerBridge);
+//        collector.setLogger(dexPatcherLoggerBridge);
         collector.setIncludeRefererToRefererAffectedClasses(true);
 
         Set<DexClassesComparator.DexClassInfo> classInfosInChangedClassesDex = collector.doCollect(oldDexGroup, newDexGroup);
@@ -498,7 +498,7 @@ public class DexDiffDecoder extends BaseDecoder {
 
         final String meta = metaBuilder.toString();
         Logger.d("\nDexDecoder:write changed classes dex meta file data:\n%s", meta);
-        metaWriter.writeLineToInfoFile(meta);
+//        metaWriter.writeLineToInfoFile(meta);
     }
 
     private void appendMetaLine(StringBuilder sb, Object... vals) {
@@ -623,13 +623,13 @@ public class DexDiffDecoder extends BaseDecoder {
             DexPatchGenerator dexPatchGen = new DexPatchGenerator(oldDexFile, newDexFile);
             dexPatchGen.setAdditionalRemovingClassPatterns(config.mDexLoaderPattern);
 
-            logWriter.writeLineToInfoFile(
-                    String.format(
-                            "Start diff between [%s] as old and [%s] as new:",
-                            getRelativeStringBy(oldDexFile, config.mTempUnzipOldDir),
-                            getRelativeStringBy(newDexFile, config.mTempUnzipNewDir)
-                    )
-            );
+//            logWriter.writeLineToInfoFile(
+//                    String.format(
+//                            "Start diff between [%s] as old and [%s] as new:",
+//                            getRelativeStringBy(oldDexFile, config.mTempUnzipOldDir),
+//                            getRelativeStringBy(newDexFile, config.mTempUnzipNewDir)
+//                    )
+//            );
 
             dexPatchGen.executeAndSaveTo(dexDiffOut);
         } catch (Exception e) {
@@ -694,7 +694,7 @@ public class DexDiffDecoder extends BaseDecoder {
         Logger.d("\nAdd test install result dex: %s, size:%d", dest.getAbsolutePath(), dest.length());
         Logger.d("DexDecoder:write test dex meta file data: %s", meta);
 
-        metaWriter.writeLineToInfoFile(meta);
+//        metaWriter.writeLineToInfoFile(meta);
     }
 
     private void checkCrossDexMovingClasses() {
@@ -853,13 +853,13 @@ public class DexDiffDecoder extends BaseDecoder {
      * @throws IOException
      */
     protected void logToDexMeta(File newFile, File oldFile, File dexDiffFile, String destMd5InDvm, String destMd5InArt, String dexDiffMd5, long newOrFullPatchedCrc) {
-        if (metaWriter == null && logWriter == null) {
-            return;
-        }
+//        if (metaWriter == null && logWriter == null) {
+//            return;
+//        }
         String parentRelative = getParentRelativePathStringToNewFile(newFile);
         String relative = getRelativePathStringToNewFile(newFile);
 
-        if (metaWriter != null) {
+//        if (metaWriter != null) {
             String fileName = newFile.getName();
             String dexMode = "jar";
             if (config.mDexRaw) {
@@ -884,21 +884,21 @@ public class DexDiffDecoder extends BaseDecoder {
                 + destMd5InArt + "," + dexDiffMd5 + "," + oldCrc + "," + newOrFullPatchedCrc + "," + dexMode;
 
             Logger.d("DexDecoder:write meta file data: %s", meta);
-            metaWriter.writeLineToInfoFile(meta);
-        }
+//            metaWriter.writeLineToInfoFile(meta);
+//        }
 
-        if (logWriter != null) {
-            String log = relative + ", oldSize=" + FileOperation.getFileSizes(oldFile) + ", newSize="
-                + FileOperation.getFileSizes(newFile) + ", diffSize=" + FileOperation.getFileSizes(dexDiffFile);
-
-            logWriter.writeLineToInfoFile(log);
-        }
+//        if (logWriter != null) {
+//            String log = relative + ", oldSize=" + FileOperation.getFileSizes(oldFile) + ", newSize="
+//                + FileOperation.getFileSizes(newFile) + ", diffSize=" + FileOperation.getFileSizes(dexDiffFile);
+//
+//            logWriter.writeLineToInfoFile(log);
+//        }
     }
 
     @Override
     public void clean() {
-        metaWriter.close();
-        logWriter.close();
+//        metaWriter.close();
+//        logWriter.close();
     }
 
     private String getRawOrWrappedDexMD5(File dexOrJarFile) {
@@ -1006,6 +1006,7 @@ public class DexDiffDecoder extends BaseDecoder {
             this.logWriter.writeLineToInfoFile(msg);
         }
     }
+
 }
 
 

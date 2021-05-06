@@ -16,8 +16,6 @@
 
 package com.orange.tinkerhotfix.patch.util;
 
-import com.orange.tinkerhotfix.common.PatternUtils;
-import com.orange.tinkerhotfix.party.ClassDef;
 import com.orange.tinkerhotfix.party.Dex;
 import com.orange.tinkerhotfix.party.DexFormat;
 import com.orange.tinkerhotfix.patch.Configuration;
@@ -31,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Created by tangyinsheng on 2016/4/14.
@@ -46,25 +43,30 @@ public final class ExcludedClassModifiedChecker {
     private static final int STMCODE_ERROR_LOADER_CLASS_FOUND_IN_SECONDARY_NEW_DEX = 0x06;
     private static final int STMCODE_ERROR_LOADER_CLASS_CHANGED                    = 0x07;
     private static final int STMCODE_END                                           = 0x08;
-    private final Configuration config;
+//    private final Configuration config;
     private final DexClassesComparator dexCmptor;
     private Dex oldDex                = null;
-    private Dex                         newDex                = null;
+    private Dex newDex                = null;
     private List<DexClassesComparator.DexClassInfo>          deletedClassInfos     = null;
     private List<DexClassesComparator.DexClassInfo>          addedClassInfos       = null;
     private Map<String, DexClassesComparator.DexClassInfo[]> changedClassInfosMap  = null;
     private Set<String>                 oldClassesDescToCheck = new HashSet<>();
     private Set<String>                 newClassesDescToCheck = new HashSet<>();
-    private HashSet<Pattern>            ignoreChangeWarning   = new HashSet<>();
+//    private HashSet<Pattern>            ignoreChangeWarning   = new HashSet<>();
+
+    public File mOutFolder;
+    public File mOldApkFile;
+    public File mNewApkFile;
+
+    public Configuration config;
 
     public ExcludedClassModifiedChecker(Configuration config) {
         this.config = config;
-        this.dexCmptor = new DexClassesComparator(config.mDexLoaderPattern);
-        for (String classname : config.mDexIgnoreWarningLoaderPattern) {
-            ignoreChangeWarning.add(Pattern.compile(
-                PatternUtils.dotClassNamePatternToDescriptorRegEx(classname)
-            ));
-        }
+        this.mOutFolder = new File(config.mOutFolder);
+        this.mOldApkFile = config.mOldApkFile;
+        this.mNewApkFile = config.mNewApkFile;
+
+        this.dexCmptor = new DexClassesComparator();
     }
 
     public void checkIfExcludedClassWasModifiedInNewDex(File oldFile, File newFile) throws IOException, TinkerPatchException {
@@ -114,12 +116,12 @@ public final class ExcludedClassModifiedChecker {
                                 if (addedClassInfos.isEmpty()) {
                                     // class descriptor is completely matches, see if any contents changes.
                                     ArrayList<String> removeClasses = new ArrayList<>();
-                                    for (String classname : changedClassInfosMap.keySet()) {
-                                        if (Utils.checkFileInPattern(ignoreChangeWarning, classname)) {
-                                            Logger.e("loader class pattern: " + classname + " has changed, but it match ignore change pattern, just ignore!");
-                                            removeClasses.add(classname);
-                                        }
-                                    }
+//                                    for (String classname : changedClassInfosMap.keySet()) {
+//                                        if (Utils.checkFileInPattern(ignoreChangeWarning, classname)) {
+//                                            Logger.e("loader class pattern: " + classname + " has changed, but it match ignore change pattern, just ignore!");
+//                                            removeClasses.add(classname);
+//                                        }
+//                                    }
                                     changedClassInfosMap.keySet().removeAll(removeClasses);
                                     if (changedClassInfosMap.isEmpty()) {
                                         stmCode = STMCODE_END;
@@ -132,43 +134,6 @@ public final class ExcludedClassModifiedChecker {
                             }
                         }
                     } else {
-                        Set<Pattern> patternsOfClassDescToCheck = new HashSet<>();
-                        for (String patternStr : config.mDexLoaderPattern) {
-                            patternsOfClassDescToCheck.add(
-                                Pattern.compile(
-                                    PatternUtils.dotClassNamePatternToDescriptorRegEx(patternStr)
-                                )
-                            );
-                        }
-
-                        if (oldDex != null) {
-                            oldClassesDescToCheck.clear();
-                            for (ClassDef classDef : oldDex.classDefs()) {
-                                String desc = oldDex.typeNames().get(classDef.typeIndex);
-                                if (Utils.isStringMatchesPatterns(desc, patternsOfClassDescToCheck)) {
-                                    oldClassesDescToCheck.add(desc);
-                                }
-                            }
-                            if (!oldClassesDescToCheck.isEmpty()) {
-                                stmCode = STMCODE_ERROR_LOADER_CLASS_FOUND_IN_SECONDARY_OLD_DEX;
-                                break;
-                            }
-                        }
-
-                        if (newDex != null) {
-                            newClassesDescToCheck.clear();
-                            for (ClassDef classDef : newDex.classDefs()) {
-                                String desc = newDex.typeNames().get(classDef.typeIndex);
-                                if (Utils.isStringMatchesPatterns(desc, patternsOfClassDescToCheck)) {
-                                    newClassesDescToCheck.add(desc);
-                                }
-                            }
-                            if (!newClassesDescToCheck.isEmpty()) {
-                                stmCode = STMCODE_ERROR_LOADER_CLASS_FOUND_IN_SECONDARY_NEW_DEX;
-                                break;
-                            }
-                        }
-
                         stmCode = STMCODE_END;
                     }
                     break;
@@ -183,40 +148,40 @@ public final class ExcludedClassModifiedChecker {
                     throw new TinkerPatchException("all loader classes don't appear in old primary dex.");
                 }
                 case STMCODE_ERROR_LOADER_CLASS_IN_PRIMARY_DEX_MISMATCH: {
-                    throw new TinkerPatchException(
-                        "there's loader classes added in new primary dex, such these changes will not take effect.\n"
-                            + "added classes: " + Utils.collectionToString(addedClassInfos)
-                    );
+//                    throw new TinkerPatchException(
+//                        "there's loader classes added in new primary dex, such these changes will not take effect.\n"
+//                            + "added classes: " + Utils.collectionToString(addedClassInfos)
+//                    );
                 }
                 case STMCODE_ERROR_LOADER_CLASS_FOUND_IN_SECONDARY_OLD_DEX: {
-                    final String msg = "loader classes are found in old secondary dex. Found classes: " + Utils.collectionToString(oldClassesDescToCheck);
-                    if (config.mAllowLoaderInAnyDex) {
-                        Logger.d(msg);
-                        return;
-                    } else {
-                        throw new TinkerPatchException(msg);
-                    }
+//                    final String msg = "loader classes are found in old secondary dex. Found classes: " + Utils.collectionToString(oldClassesDescToCheck);
+//                    if (config.mAllowLoaderInAnyDex) {
+//                        Logger.d(msg);
+//                        return;
+//                    } else {
+//                        throw new TinkerPatchException(msg);
+//                    }
                 }
                 case STMCODE_ERROR_LOADER_CLASS_FOUND_IN_SECONDARY_NEW_DEX: {
-                    final String msg = "loader classes are found in new secondary dex. Found classes: " + Utils.collectionToString(newClassesDescToCheck);
-                    if (config.mAllowLoaderInAnyDex) {
-                        Logger.d(msg);
-                        return;
-                    } else {
-                        throw new TinkerPatchException(msg);
-                    }
+//                    final String msg = "loader classes are found in new secondary dex. Found classes: " + Utils.collectionToString(newClassesDescToCheck);
+//                    if (config.mAllowLoaderInAnyDex) {
+//                        Logger.d(msg);
+//                        return;
+//                    } else {
+//                        throw new TinkerPatchException(msg);
+//                    }
                 }
                 case STMCODE_ERROR_LOADER_CLASS_CHANGED: {
-                    String msg =
-                        "some loader class has been changed in new primary dex."
-                            + " Such these changes will not take effect!!"
-                            + " related classes: "
-                            + Utils.collectionToString(changedClassInfosMap.keySet());
-                    throw new TinkerPatchException(msg);
+//                    String msg =
+//                        "some loader class has been changed in new primary dex."
+//                            + " Such these changes will not take effect!!"
+//                            + " related classes: "
+//                            + Utils.collectionToString(changedClassInfosMap.keySet());
+//                    throw new TinkerPatchException(msg);
                 }
                 default: {
-                    Logger.e("internal-error: unexpected stmCode.");
-                    stmCode = STMCODE_END;
+//                    Logger.e("internal-error: unexpected stmCode.");
+//                    stmCode = STMCODE_END;
                     break;
                 }
             }

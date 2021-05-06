@@ -16,13 +16,14 @@
 
 package com.orange.tinkerhotfix.dexpatcher.algorithms.diff;
 
-import com.tencent.tinker.android.dex.ClassData;
-import com.tencent.tinker.android.dex.Dex;
-import com.tencent.tinker.android.dex.SizeOf;
-import com.tencent.tinker.android.dex.TableOfContents;
-import com.tencent.tinker.android.dex.io.DexDataBuffer;
-import com.tencent.tinker.commons.dexpatcher.util.AbstractIndexMap;
-import com.tencent.tinker.commons.dexpatcher.util.SparseIndexMap;
+
+import com.orange.tinkerhotfix.common.AbstractIndexMap;
+import com.orange.tinkerhotfix.common.SparseIndexMap;
+import com.orange.tinkerhotfix.party.ClassData;
+import com.orange.tinkerhotfix.party.Dex;
+import com.orange.tinkerhotfix.party.SizeOf;
+import com.orange.tinkerhotfix.party.TableOfContents;
+import com.orange.tinkerhotfix.party.io.DexDataBuffer;
 
 import java.util.Collection;
 import java.util.HashSet;

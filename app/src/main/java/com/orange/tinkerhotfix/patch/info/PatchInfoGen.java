@@ -44,7 +44,7 @@ public class PatchInfoGen {
     }
 
     private void addTinkerID() throws IOException, ParseException {
-        if (!config.mPackageFields.containsKey(TypedValue.TINKER_ID)) {
+        if (config.mPackageFields.containsKey(TypedValue.TINKER_ID)) {
             AndroidParser oldAndroidManifest = AndroidParser.getAndroidManifest(config.mOldApkFile);
             String tinkerID = oldAndroidManifest.metaDatas.get(TypedValue.TINKER_ID);
 
@@ -54,7 +54,7 @@ public class PatchInfoGen {
             config.mPackageFields.put(TypedValue.TINKER_ID, tinkerID);
         }
 
-        if (!config.mPackageFields.containsKey(TypedValue.NEW_TINKER_ID)) {
+        if (config.mPackageFields.containsKey(TypedValue.NEW_TINKER_ID)) {
             AndroidParser newAndroidManifest = AndroidParser.getAndroidManifest(config.mNewApkFile);
             String tinkerID = newAndroidManifest.metaDatas.get(TypedValue.TINKER_ID);
 

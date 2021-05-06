@@ -16,9 +16,10 @@
 
 package com.orange.tinkerhotfix.dx.instruction;
 
-import com.tencent.tinker.android.dex.DexException;
-import com.tencent.tinker.android.dx.util.Hex;
-import com.tencent.tinker.android.utils.SparseIntArray;
+
+import com.orange.tinkerhotfix.dx.instruction.util.Hex;
+import com.orange.tinkerhotfix.party.DexException;
+import com.orange.tinkerhotfix.util.SparseIntArray;
 
 /**
  * *** This file is NOT a part of AOSP. ***

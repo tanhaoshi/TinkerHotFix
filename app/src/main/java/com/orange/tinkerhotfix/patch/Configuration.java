@@ -114,10 +114,6 @@ public class Configuration {
     /**
      * resource config
      */
-    public HashSet<Pattern> mResFilePattern;
-    public HashSet<Pattern> mResIgnoreChangePattern;
-    public HashSet<Pattern> mResIgnoreChangeWarningPattern;
-    public HashSet<String>  mResRawPattern;
     public int              mLargeModSize;
     /**
      * only gradle have the param
@@ -159,18 +155,12 @@ public class Configuration {
     /**
      * use by command line with xml config
      */
-    public Configuration(File config, File outputFile, File oldApkFile, File newApkFile)
+    public Configuration(File config,File outputFile, File oldApkFile, File newApkFile)
         throws IOException, ParserConfigurationException, SAXException, TinkerPatchException {
         mUsingGradle = false;
-        mSoFilePattern = new HashSet<>();
         mDexFilePattern = new HashSet<>();
         mDexLoaderPattern = new HashSet<>();
         mDexIgnoreWarningLoaderPattern = new HashSet<>();
-
-        mResFilePattern = new HashSet<>();
-        mResRawPattern = new HashSet<>();
-        mResIgnoreChangePattern = new HashSet<>();
-        mResIgnoreChangeWarningPattern = new HashSet<>();
 
         mPackageFields = new HashMap<>();
         mOutFolder = outputFile.getAbsolutePath();
@@ -181,9 +171,13 @@ public class Configuration {
 
         mNewApkFile = newApkFile;
         mNewApkPath = newApkFile.getAbsolutePath();
+
         mLargeModSize = 100;
+
         readXmlConfig(config);
+
         createTempDirectory();
+
         checkInputPatternParameter();
     }
 
@@ -198,11 +192,6 @@ public class Configuration {
         mDexLoaderPattern = new HashSet<>();
         mDexIgnoreWarningLoaderPattern = new HashSet<>();
 
-        mResFilePattern = new HashSet<>();
-        mResRawPattern = new HashSet<>();
-        mResIgnoreChangePattern = new HashSet<>();
-        mResIgnoreChangeWarningPattern = new HashSet<>();
-
         mPackageFields = new HashMap<>();
 
         for (String item : param.soFilePattern) {
@@ -213,18 +202,7 @@ public class Configuration {
             addToPatterns(item, mDexFilePattern);
         }
 
-        for (String item : param.resourceFilePattern) {
-            mResRawPattern.add(item);
-            addToPatterns(item, mResFilePattern);
-        }
 
-        for (String item : param.resourceIgnoreChangePattern) {
-            addToPatterns(item, mResIgnoreChangePattern);
-        }
-
-        for (String item : param.resourceIgnoreChangeWarningPattern) {
-            addToPatterns(item, mResIgnoreChangeWarningPattern);
-        }
         mLargeModSize = param.largeModSize;
         //only gradle have the param
         mUseApplyResource = param.useApplyResource;
@@ -263,6 +241,7 @@ public class Configuration {
         FileOperation.cleanDir(new File(mOutFolder));
 
         createTempDirectory();
+
         checkInputPatternParameter();
 
         mArkHotPatchName = param.arkHotPatchName;
@@ -306,20 +285,12 @@ public class Configuration {
         }
 
         sb.append("lib configs: \n");
-        for (Pattern name : mSoFilePattern) {
-            sb.append("libPattern:" + name.toString() + "\n");
-        }
+//        for (Pattern name : mSoFilePattern) {
+//            sb.append("libPattern:" + name.toString() + "\n");
+//        }
 
         sb.append("resource configs: \n");
-        for (Pattern name : mResFilePattern) {
-            sb.append("resPattern:" + name.toString() + "\n");
-        }
-        for (Pattern name : mResIgnoreChangePattern) {
-            sb.append("resIgnore change:" + name.toString() + "\n");
-        }
-        for (Pattern name : mResIgnoreChangeWarningPattern) {
-            sb.append("resIgnore change warning:" + name.toString() + "\n");
-        }
+
         sb.append("largeModSize:" + mLargeModSize + "kb\n");
         sb.append("useApplyResource:" + mUseApplyResource + "\n");
         sb.append("ArkHot: "  + mArkHotPatchPath + " / " + mArkHotPatchName + "\n");
@@ -377,7 +348,7 @@ public class Configuration {
     }
 
     private void checkInputPatternParameter() throws TinkerPatchException {
-        if (mSoFilePattern.isEmpty() && mDexFilePattern.isEmpty() && mResFilePattern.isEmpty()) {
+        if (mDexFilePattern.isEmpty()) {
             throw new TinkerPatchException("no dex, so or resource pattern are found");
         }
         if (mLargeModSize <= 0) {
@@ -428,9 +399,9 @@ public class Configuration {
                 } else if (id.equals(DEX_ISSUE)) {
                     readDexPatternsFromXml(node);
                 } else if (id.equals(SO_ISSUE)) {
-                    readLibPatternsFromXml(node);
+//                    readLibPatternsFromXml(node);
                 } else if (id.equals(RES_ISSUE)) {
-                    readResPatternsFromXml(node);
+//                    readResPatternsFromXml(node);
                 } else if (id.equals(PACKAGE_CONFIG_ISSUE)) {
                     readPackageConfigFromXml(node);
                 } else if (id.equals(SIGN_ISSUE)) {
@@ -577,57 +548,6 @@ public class Configuration {
                         mDexLoaderPattern.add(value);
                     } else if (tagName.equals(ATTR_IGNORE_CHANGE)) {
                         mDexIgnoreWarningLoaderPattern.add(value);
-                    } else {
-                        System.err.println("unknown dex tag " + tagName);
-                    }
-                }
-            }
-        }
-    }
-
-    private void readLibPatternsFromXml(Node node) throws IOException {
-        NodeList childNodes = node.getChildNodes();
-        if (childNodes.getLength() > 0) {
-            for (int j = 0, n = childNodes.getLength(); j < n; j++) {
-                Node child = childNodes.item(j);
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
-                    Element check = (Element) child;
-                    String tagName = check.getTagName();
-
-                    String value = check.getAttribute(ATTR_VALUE);
-                    if (tagName.equals(ATTR_PATTERN)) {
-                        addToPatterns(value, mSoFilePattern);
-                    } else {
-                        System.err.println("unknown dex tag " + tagName);
-                    }
-                }
-            }
-        }
-    }
-
-    private void readResPatternsFromXml(Node node) throws IOException {
-        NodeList childNodes = node.getChildNodes();
-        if (childNodes.getLength() > 0) {
-            for (int j = 0, n = childNodes.getLength(); j < n; j++) {
-                Node child = childNodes.item(j);
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
-                    Element check = (Element) child;
-                    String tagName = check.getTagName();
-
-                    String value = check.getAttribute(ATTR_VALUE);
-                    if (tagName.equals(ATTR_PATTERN)) {
-                        mResRawPattern.add(value);
-                        addToPatterns(value, mResFilePattern);
-                    } else if (tagName.equals(ATTR_IGNORE_CHANGE)) {
-                        if (!Utils.isBlank(value)) {
-                            addToPatterns(value, mResIgnoreChangePattern);
-                        }
-                    } else if (tagName.equals(ATTR_IGNORE_CHANGE_WARNING)) {
-                        if (!Utils.isBlank(value)) {
-                            addToPatterns(value, mResIgnoreChangeWarningPattern);
-                        }
-                    } else if (tagName.equals(ATTR_RES_LARGE_MOD)) {
-                        mLargeModSize = Integer.valueOf(value);
                     } else {
                         System.err.println("unknown dex tag " + tagName);
                     }

@@ -16,7 +16,6 @@
 
 package com.orange.tinkerhotfix.patch.util;
 
-import com.tencent.tinker.commons.util.IOHelper;
 
 import java.io.File;
 import java.io.FileInputStream;

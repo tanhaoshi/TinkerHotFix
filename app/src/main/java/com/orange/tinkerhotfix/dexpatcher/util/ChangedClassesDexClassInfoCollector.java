@@ -16,27 +16,26 @@
 
 package com.orange.tinkerhotfix.dexpatcher.util;
 
-import com.tencent.tinker.android.dex.ClassData;
-import com.tencent.tinker.android.dex.ClassDef;
-import com.tencent.tinker.android.dex.Code;
-import com.tencent.tinker.android.dex.Dex;
-import com.tencent.tinker.android.dex.FieldId;
-import com.tencent.tinker.android.dex.MethodId;
-import com.tencent.tinker.android.dex.ProtoId;
-import com.tencent.tinker.android.dx.instruction.InstructionCodec;
-import com.tencent.tinker.android.dx.instruction.InstructionReader;
-import com.tencent.tinker.android.dx.instruction.InstructionVisitor;
-import com.tencent.tinker.android.dx.instruction.ShortArrayCodeInput;
-import com.tencent.tinker.build.util.DexClassesComparator;
-import com.tencent.tinker.commons.dexpatcher.DexPatcherLogger;
+
+import com.orange.tinkerhotfix.common.DexPatcherLogger;
+import com.orange.tinkerhotfix.dx.instruction.InstructionCodec;
+import com.orange.tinkerhotfix.dx.instruction.InstructionReader;
+import com.orange.tinkerhotfix.dx.instruction.InstructionVisitor;
+import com.orange.tinkerhotfix.dx.instruction.ShortArrayCodeInput;
+import com.orange.tinkerhotfix.party.ClassData;
+import com.orange.tinkerhotfix.party.ClassDef;
+import com.orange.tinkerhotfix.party.Code;
+import com.orange.tinkerhotfix.party.Dex;
+import com.orange.tinkerhotfix.party.FieldId;
+import com.orange.tinkerhotfix.party.MethodId;
+import com.orange.tinkerhotfix.party.ProtoId;
+import com.orange.tinkerhotfix.patch.util.DexClassesComparator;
 
 import java.io.EOFException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.tencent.tinker.build.util.DexClassesComparator.DexClassInfo;
-import static com.tencent.tinker.build.util.DexClassesComparator.DexGroup;
 
 /**
  * Created by tangyinsheng on 2017/2/26.
@@ -70,9 +69,9 @@ public class ChangedClassesDexClassInfoCollector {
         return this;
     }
 
-    public Set<DexClassInfo> doCollect(DexGroup oldDexGroup, DexGroup newDexGroup) {
+    public Set<DexClassesComparator.DexClassInfo> doCollect(DexClassesComparator.DexGroup oldDexGroup, DexClassesComparator.DexGroup newDexGroup) {
         final Set<String> classDescsInResult = new HashSet<>();
-        final Set<DexClassInfo> result = new HashSet<>();
+        final Set<DexClassesComparator.DexClassInfo> result = new HashSet<>();
 
         DexClassesComparator dexClassCmptor = new DexClassesComparator("*");
         dexClassCmptor.setCompareMode(DexClassesComparator.COMPARE_MODE_NORMAL);
@@ -83,16 +82,16 @@ public class ChangedClassesDexClassInfoCollector {
         // So far we collected infos of all added, changed, and deleted classes.
         result.addAll(dexClassCmptor.getAddedClassInfos());
 
-        final Collection<DexClassInfo[]> changedClassInfos = dexClassCmptor.getChangedClassDescToInfosMap().values();
+        final Collection<DexClassesComparator.DexClassInfo[]> changedClassInfos = dexClassCmptor.getChangedClassDescToInfosMap().values();
 
-        for (DexClassInfo[] oldAndNewInfoPair : changedClassInfos) {
-            final DexClassInfo newClassInfo = oldAndNewInfoPair[1];
+        for (DexClassesComparator.DexClassInfo[] oldAndNewInfoPair : changedClassInfos) {
+            final DexClassesComparator.DexClassInfo newClassInfo = oldAndNewInfoPair[1];
 
             LOGGER.i(TAG, "Add class %s to changed classes dex.", newClassInfo.classDesc);
             result.add(newClassInfo);
         }
 
-        for (DexClassInfo classInfo : result) {
+        for (DexClassesComparator.DexClassInfo classInfo : result) {
             classDescsInResult.add(classInfo.classDesc);
         }
 
@@ -104,9 +103,9 @@ public class ChangedClassesDexClassInfoCollector {
             dexClassCmptor.startCheck(oldDexGroup, newDexGroup);
 
             Set<String> referrerAffectedChangedClassDescs = dexClassCmptor.getChangedClassDescToInfosMap().keySet();
-            Set<DexClassInfo> oldClassInfos = oldDexGroup.getClassInfosInDexesWithDuplicateCheck();
+            Set<DexClassesComparator.DexClassInfo> oldClassInfos = oldDexGroup.getClassInfosInDexesWithDuplicateCheck();
 
-            for (DexClassInfo oldClassInfo : oldClassInfos) {
+            for (DexClassesComparator.DexClassInfo oldClassInfo : oldClassInfos) {
                 if (!classDescsInResult.contains(oldClassInfo.classDesc)
                         && isClassReferToAnyClasses(oldClassInfo, referrerAffectedChangedClassDescs)) {
                     LOGGER.i(TAG, "Add class %s in old dex to changed classes dex since it is affected by modified referee.", oldClassInfo.classDesc);
@@ -118,7 +117,7 @@ public class ChangedClassesDexClassInfoCollector {
         return result;
     }
 
-    private boolean isClassReferToAnyClasses(DexClassInfo classInfo, Set<String> refereeClassDescs) {
+    private boolean isClassReferToAnyClasses(DexClassesComparator.DexClassInfo classInfo, Set<String> refereeClassDescs) {
         if (classInfo.classDef.classDataOffset == ClassDef.NO_OFFSET) {
             return false;
         }
@@ -136,7 +135,7 @@ public class ChangedClassesDexClassInfoCollector {
         return false;
     }
 
-    private boolean isMethodReferToAnyClasses(DexClassInfo classInfo, ClassData.Method method, Set<String> refereeClassDescs) {
+    private boolean isMethodReferToAnyClasses(DexClassesComparator.DexClassInfo classInfo, ClassData.Method method, Set<String> refereeClassDescs) {
         if (method.codeOffset == ClassDef.NO_OFFSET) {
             return false;
         }
